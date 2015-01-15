@@ -1,0 +1,7 @@
+---
+- name: MySQL client | FreeBSD | install packages
+  pkgng: name={{ item }} state=present
+  with_items:
+  - percona56-client
+  - percona-toolkit
+  - percona-xtrabackup

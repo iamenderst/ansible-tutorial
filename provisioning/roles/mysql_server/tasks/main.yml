@@ -1,0 +1,6 @@
+---
+- include: Linux.yml tags=mysql-server
+  when: ansible_os_family == 'Linux'
+
+- include: FreeBSD.yml tags=mysql-server
+  when: ansible_os_family == 'FreeBSD'

@@ -1,0 +1,8 @@
+---
+- name: MySQL client | RedHat | install Percona yum repo
+  yum: name="{{ percona_yum_repo }}" state=present
+
+- name: MySQL client | RedHat | install packages
+  yum: name="{{ item }}" state=present 
+  with_items:
+    - Percona-Server-client-56
