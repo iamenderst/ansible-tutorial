@@ -13,6 +13,14 @@ Setting up your bare git repo
 
 Creating your inventory file
 ----------------------------
+* Create ${PROJECT}/hosts
+* Create groups in hosts [master], [slave], [all:children], ...
+
+Setting up ansible.cfg to default to your inventory
+---------------------------------------------------
+* vi ansible.cfg 
+* edit: inventory=${PROJECT}/hosts
+* confirm that you can run ansible and ansible-play without -i
 
 Creating your first simple playbook
 -----------------------------------
