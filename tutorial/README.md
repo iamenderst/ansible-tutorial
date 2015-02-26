@@ -6,7 +6,7 @@ In this tutorial we are going to use Ansible to provision VMs managed by Vagrant
 Setting up your VMs
 ===================
 [Setting up
-Vagrant and VirtualBox](https://github.com/robertbarabas/ansible-tutorial/tutorial/Vagrant.md)
+Vagrant and VirtualBox](https://github.com/robertbarabas/ansible-tutorial/tutorial/VM_setup.md)
 
 Setting up Ansible
 ==================
