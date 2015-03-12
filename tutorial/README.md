@@ -7,13 +7,9 @@
 
 In this tutorial we are going to use Ansible to provision VMs managed by Vagrant, running on VirtualBox. We will use git to version control our Ansible repository.
 
----
 ## [Setting up VMs]
----
 ## [Setting up Ansible]
----
 ## [Setting up Git]
----
 ## [Creating Ansible project]
 
 
