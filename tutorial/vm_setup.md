@@ -147,7 +147,7 @@ Our goal is to setup two Linux VMs that are on the same "private" network, prefe
 
 To achieve that, we are going to create a simple Vagrantfile to describe the setup.
 
-:warning: Create a project directory and put your Vagrantfile in there!
+:warning: Create a project directory and put your Vagrantfile in there! :warning:
 
 The contents of the initial Vagrantfile should look as follows:
 
