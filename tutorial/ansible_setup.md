@@ -3,8 +3,8 @@
 [Ansible install page]: http://docs.ansible.com/intro_installation.html
 [Ansible source]: https://github.com/ansible/ansible
 
-[Install Ansible From Source]: ansible_setup.md#Install-Ansible-From-Source
-[Install Ansible Using Pip]: ansible_setup.md#Install-Ansible-Using-Pip
+[Installing Ansible From Source]: ansible_setup.md#installing-ansible-from-source
+[Installing Ansible Using Pip]: ansible_setup.md#installing-ansible-using-pip
 
 
 # Setting up Ansible
