@@ -149,7 +149,7 @@ To achieve that, we are going to create a simple Vagrantfile to describe the set
 
 :warning: Create a project directory and put your Vagrantfile in there! :warning:
 
-The contents of the initial Vagrantfile should look as follows:
+The contents of the *initial* Vagrantfile (we are going to modify it soon) should look as follows:
 
 ```
 # -*- mode: ruby -*-
