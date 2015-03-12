@@ -23,7 +23,9 @@ Note that all the installer links point to 64 bit installers. If you have a 32 b
 
 ## Installing Vagrant 
 
-Below are the instructions for MAC and Linux. If you have a different platform (Windows) or you have a 32 bit machine you can grab the installer from the [Vagrant downloads page]. If you have another platform, you might need to install it using [Vagrant source].
+Below are the installation instructions for MAC and Linux. The version that we are going to use is 1.7.2. If you have a different platform (Windows) or you have a 32 bit machine you can grab the installer from the [Vagrant downloads page]. If you have another platform, you might need to install it using [Vagrant source].
+
+
 
 ### Mac OS X
 
@@ -37,21 +39,33 @@ Below are the instructions for MAC and Linux. If you have a different platform (
 
 * Ensure you have [homebrew] and [cask] installed  
 * Install Vagrant with the following command:   
-  `# brew cask install vagrant`  
+
+```
+ $ brew cask install vagrant
+```
 
 ### Debian derivatives
 
 ##### Using deb
 * Grab the [Vagrant DEB installer]
 * Install the package with the following command:  
-  `# dpkg -i vagrant_*.deb`
+
+```
+ $ dpkg -i vagrant_*.deb
+```
 
 ##### Using apt-get
 * Check if your distribution includes Vagrant:  
-  `# apt-cache search vagrant`
+
+```
+ $ apt-cache search vagrant
+```
   
 * Install the package with the following command:  
-  `# apt-get install vagrant`
+
+```
+ $ apt-get install vagrant
+```
 
   (note that above assumes package is called vagrant)
 
@@ -61,27 +75,39 @@ Below are the instructions for MAC and Linux. If you have a different platform (
 ##### Using rpm
 * Grab the [Vagrant RPM installer]
 * Install the package with the following command:  
-  `# rpm -ivh vagrant_*.rpm`
+
+```
+ $ sudo rpm -ivh vagrant_*.rpm
+```
 
 ##### Using yum
 
 * Check if your repos provide vagrant:  
-  `# yum search vagrant`
+
+```
+ $ yum search vagrant
+``` 
   
 * If they do, install it as follows:  
-  `# yum install vagrant`
+
+```
+ $ sudo yum install vagrant
+```
   
   (note that above assumes package is called vagrant)
 
 ### Validate
 
 * Validate that your installation works:  
-  `# vagrant --version`
+
+```
+ $ vagrant --version
+```
 
 
 ## Installing VirtualBox
 
-Below are the instructions for MAC and Linux. If you have a different platform (Windows) or you have a more custom machine, alternative installers and the source code can be obtained from the [VirtualBox downloads page]. 
+Below are the instructions for MAC and Linux. The version that we are going to use is 4.3. If you have a different platform (Windows) or you have a more custom machine, alternative installers and the source code can be obtained from the [VirtualBox downloads page]. 
 
 ### Mac OS X
 
@@ -95,23 +121,35 @@ Below are the instructions for MAC and Linux. If you have a different platform (
 
 * Ensure you have [homebrew] and [cask] installed  
 * Install Vagrant with the following command:   
-  `# brew cask install virtualbox`  
+
+```
+ $ brew cask install virtualbox
+```  
 
 ### Debian derivatives
 
 ##### Using deb
 * Grab the DEB for your distribution from [VirtualBox Linux Downloads]* 
 * Install the package with the following command:  
-  `# dpkg -i virtualbox_*.deb`
+
+```
+ $ sudo dpkg -i virtualbox_*.deb
+``` 
 
 ##### Using apt-get
 * Check if your distribution includes VirtualBox:  
-  `# apt-cache search virtualbox`
+
+```
+ $ apt-cache search virtualbox
+```
 
 * If not, you might have to setup the VirtualBox repo. Instructions can be found on the [VirtualBox Linux Downloads] page
   
 * Install the package with the following command:  
-  `# apt-get install virtualbox`
+
+```
+ $ sudo apt-get install virtualbox
+``` 
 
   (note that above assumes package is called virtualbox)
 
@@ -121,24 +159,36 @@ Below are the instructions for MAC and Linux. If you have a different platform (
 ##### Using rpm
 * Grab the RPM for your distribution from [VirtualBox Linux Downloads]
 * Install the package with the following command:  
-  `# rpm -ivh VirtualBox_*.rpm`
+
+```
+ $ sudo rpm -ivh VirtualBox_*.rpm
+```
 
 ##### Using yum
 
 * Check if your repos provide VirtualBox:  
-  `# yum search VirtualBox`
+
+```
+ $ yum search VirtualBox
+```
 
 * If not, you might have to setup the VirtualBox repo. Instructions can be found on the [VirtualBox Linux Downloads] page
   
 * Once you have a repository that provides the package, you can install it as follows:  
-  `# yum install VirtualBox-4.3`
+
+```
+ $ yum install VirtualBox-4.3
+``` 
   
   (note that above assumes package is called virtualbox)
 
 ### Validate
 
 * Validate that your installation works:  
-  `# VBoxManage list vms`
+
+```
+ $ VBoxManage list vms
+``` 
   
   (should return empty at this point)
 
@@ -151,8 +201,8 @@ To achieve that, we are going to create a simple Vagrantfile to describe the set
 :warning: **Create a project directory and put your Vagrantfile in there!** :warning:
 
 ```
- # mkdir ansible_tutorial
- # cat > Vagrantfile
+ $ mkdir ansible_tutorial
+ $ cat > Vagrantfile
  [copy and paste Vagrantfile contents here]
  ^D
 ````
@@ -182,18 +232,28 @@ end
 
 ### Validate
 
-* Make sure you are in your project directory (```ansible_tutorial/```)
+* Make sure you are in your project directory (**ansible_tutorial/**)
 
 * Validate that your Vagrantfile looks consistent with the snippet above     
-  `# cat Vagrantfile`
+
+```
+ $ cat Vagrantfile
+```
   
 * Start up your VMs:  
-  `# vagrant up`
+
+```
+ $ vagrant up
+``` 
 
 * Log on to your **master** VM:  
-  `# vagrant ssh master`
+
+```
+ $ vagrant ssh master
+```
   
-* You should see a prompt like this:  
+* After login your prompt should look like this:  
+
 ```
 [vagrant@master ~]$
 ```
