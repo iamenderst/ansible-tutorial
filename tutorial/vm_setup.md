@@ -64,7 +64,7 @@ Below are the installation instructions for MAC and Linux. The version that we a
 * Install the package with the following command:  
 
 ```
- $ apt-get install vagrant
+ $ sudo apt-get install vagrant
 ```
 
   (note that above assumes package is called vagrant)
@@ -177,7 +177,7 @@ Below are the instructions for MAC and Linux. The version that we are going to u
 * Once you have a repository that provides the package, you can install it as follows:  
 
 ```
- $ yum install VirtualBox-4.3
+ $ sudo yum install VirtualBox-4.3
 ``` 
   
   (note that above assumes package is called virtualbox)
