@@ -6,6 +6,10 @@
 [homebrew]: http://brew.sh/
 [cask]: http://caskroom.io/
 
+[VirtualBox downloads page]: https://www.virtualbox.org/wiki/Downloads
+[VirtualBox MAC installer]: http://download.virtualbox.org/virtualbox/4.3.24/VirtualBox-4.3.24-98716-OSX.dmg
+[VirtualBox Linux Downloads]: https://www.virtualbox.org/wiki/Linux_Downloads
+
 
 # Setting up VMs
 
@@ -45,7 +49,7 @@ Below are the instructions for MAC and Linux. If you have a different platform (
 * Check if your distribution includes Vagrant:  
   `# apt-cache search vagrant`
   
-* install the package with the following command:  
+* Install the package with the following command:  
   `# apt-get install vagrant`
 
   (note that above assumes package is called vagrant)
@@ -76,11 +80,68 @@ Below are the instructions for MAC and Linux. If you have a different platform (
 
 ## Installing VirtualBox
 
+Below are the instructions for MAC and Linux. If you have a different platform (Windows) or you have a more custom machine, alternative installers and the source code can be obtained from the [VirtualBox downloads page]. 
 
+### Mac OS X
+
+
+##### Using DMG
+
+* Grab the [VirtualBox MAC installer] and click on it to mount the dmg
+* Perform install using embedded VirtualBox.pkg
+
+##### Using HomeBrew and Cask
+
+* Ensure you have [homebrew] and [cask] installed  
+* Install Vagrant with the following command:   
+  `# brew cask install virtualbox`  
+
+### Debian derivatives
+
+##### Using deb
+* Grab the DEB for your distribution from [VirtualBox Linux Downloads]* 
+* Install the package with the following command:  
+  `# dpkg -i virtualbox_*.deb`
+
+##### Using apt-get
+* Check if your distribution includes VirtualBox:  
+  `# apt-cache search virtualbox`
+
+* If not, you might have to setup the VirtualBox repo. Instructions can be found on the [VirtualBox Linux Downloads] page
+  
+* Install the package with the following command:  
+  `# apt-get install virtualbox`
+
+  (note that above assumes package is called virtualbox)
+
+
+### Red Hat derivatives
+
+### Using rpm
+* Grab the RPM for your distribution from [VirtualBox Linux Downloads]
+* Install the package with the following command:  
+  `# rpm -ivh VirtualBox_*.rpm`
+
+### Using yum
+
+* Check if your repos provide VirtualBox:  
+  `# yum search VirtualBox`
+
+* If not, you might have to setup the VirtualBox repo. Instructions can be found on the [VirtualBox Linux Downloads] page
+  
+* Once you have a repository that provides the package, you can install it as follows:  
+  `# yum install VirtualBox-4.3`
+  
+  (note that above assumes package is called virtualbox)
+
+### Validate
+
+* Validate that your installation works:  
+  `# VBoxManage list vms`
+  
+  (should return empty at this point)
 
 ## Setting up your first Vagrantfile
 
-
-* Our goal: setup two minimal install Linux VMs running CentOS 7 that coexist
-  on the same network.
+Our goal is to setup two Linux VMs that are on the same "private" network, preferably running a minimal installation of CentOS 7.
 
