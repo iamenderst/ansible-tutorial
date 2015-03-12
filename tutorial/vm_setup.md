@@ -57,12 +57,12 @@ Below are the instructions for MAC and Linux. If you have a different platform (
 
 ### Red Hat derivatives
 
-### Using rpm
+##### Using rpm
 * Grab the [Vagrant RPM installer]
 * Install the package with the following command:  
   `# rpm -ivh vagrant_*.rpm`
 
-### Using yum
+##### Using yum
 
 * Check if your repos provide vagrant:  
   `# yum search vagrant`
@@ -117,12 +117,12 @@ Below are the instructions for MAC and Linux. If you have a different platform (
 
 ### Red Hat derivatives
 
-### Using rpm
+##### Using rpm
 * Grab the RPM for your distribution from [VirtualBox Linux Downloads]
 * Install the package with the following command:  
   `# rpm -ivh VirtualBox_*.rpm`
 
-### Using yum
+##### Using yum
 
 * Check if your repos provide VirtualBox:  
   `# yum search VirtualBox`
