@@ -16,8 +16,6 @@ In the following we are going to perform these steps on a MAC but below we provi
 
 Note that all the installer links point to 64 bit installers. If you have a 32 bit machine please grab the corresponding installer from the corresponding download page.
 
-----
-
 ## Installing Vagrant 
 
 Below are the instructions for MAC and Linux. If you have a different platform (Windows) or you have a 32 bit machine you can grab the installer from the [Vagrant downloads page]. If you have another platform, you might need to install it using [Vagrant source].
