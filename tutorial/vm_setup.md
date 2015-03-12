@@ -149,6 +149,13 @@ To achieve that, we are going to create a simple Vagrantfile to describe the set
 
 :warning: **Create a project directory and put your Vagrantfile in there!** :warning:
 
+```
+ # mkdir ansible_tutorial
+ # cat > Vagrantfile
+ [copy and paste Vagrantfile contents here]
+ ^D
+````
+
 The contents of the *initial* Vagrantfile (we are going to modify it soon) should look as follows:
 
 ```
@@ -156,7 +163,7 @@ The contents of the *initial* Vagrantfile (we are going to modify it soon) shoul
 # vi: set ft=ruby :
 
 Vagrant.configure("2") do |config|
-    config.vm.box = "perconajay/centos-86_64"
+    config.vm.box = "perconajayj/centos-x86_64"
 
     # Master
     config.vm.define "master" do |master|
@@ -170,4 +177,22 @@ Vagrant.configure("2") do |config|
         slave.vm.hostname = "slave"
     end
 end
+```
+
+### Validate
+
+* Make sure you are in your project directory (```ansible_tutorial/```)
+
+* Validate that your Vagrantfile looks consistent with the snippet above     
+  `# cat Vagrantfile`
+  
+* Start up your VMs:  
+  `# vagrant up`
+
+* Log on to your **master** VM:  
+  `# vagrant ssh master`
+  
+* You should see a prompt like this:  
+```
+[vagrant@master ~]$
 ```
