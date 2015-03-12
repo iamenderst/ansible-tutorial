@@ -1,10 +1,11 @@
+[homebrew]: http://brew.sh/
+[cask]: http://caskroom.io/
+
 [Vagrant downloads page]: http://www.vagrantup.com/downloads
 [Vagrant source]: https://github.com/mitchellh/vagrant
 [Vagrant MAC installer]: https://dl.bintray.com/mitchellh/vagrant/vagrant_1.7.2.dmg
 [Vagrant DEB installer]: https://dl.bintray.com/mitchellh/vagrant/vagrant_1.7.2_x86_64.deb
 [Vagrant RPM installer]: https://dl.bintray.com/mitchellh/vagrant/vagrant_1.7.2_x86_64.rpm
-[homebrew]: http://brew.sh/
-[cask]: http://caskroom.io/
 
 [VirtualBox downloads page]: https://www.virtualbox.org/wiki/Downloads
 [VirtualBox MAC installer]: http://download.virtualbox.org/virtualbox/4.3.24/VirtualBox-4.3.24-98716-OSX.dmg
