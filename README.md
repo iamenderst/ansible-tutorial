@@ -1,13 +1,16 @@
+[tutorials]: tree/master/tutorial 
+[Vagrantfile]: blob/master/Vagrantfile
+[ansible.cfg]: blob/master/ansible.cfg
+[hosts]: blob/master/provisioning/inventory/hosts
+
 ansible-tutorial
 ================
 
 Ansible tutorial for PLMC 2015
 
-The tutorials are available under
-[tutorial/](https://github.com/robertbarabas/ansible-tutorial/tutorial/README.md)
+The tutorial steps are available under [tutorials]
 
 The end results of the tutorial are:
-* [Vagrantfile](https://github.com/robertbarabas/ansible-tutorial/Vagrantfile)
-* [ansible.cfg](https://github.com/robertbarabas/ansible-tutorial/ansible.cfg)
-* [provisioning/inventory/hosts](https://github.com/robertbarabas/ansible-tutorial/provisioning/inventory/hosts)
-...
+* [Vagrantfile]
+* [ansible.cfg]
+* [hosts]
