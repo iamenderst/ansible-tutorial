@@ -141,7 +141,33 @@ Below are the instructions for MAC and Linux. If you have a different platform (
   
   (should return empty at this point)
 
-## Setting up your first Vagrantfile
+## Setting up Vagrantfile
 
 Our goal is to setup two Linux VMs that are on the same "private" network, preferably running a minimal installation of CentOS 7.
 
+To achieve that, we are going to create a simple Vagrantfile to describe the setup.
+
+:warning: Create a project directory and put your Vagrantfile in there!
+
+The contents of the initial Vagrantfile should look as follows:
+
+```
+# -*- mode: ruby -*-
+# vi: set ft=ruby :
+
+Vagrant.configure("2") do |config|
+    config.vm.box = "perconajay/centos-86_64"
+
+    # Master
+    config.vm.define "master" do |master|
+        master.vm.network "private_network", ip: "192.168.10.100"
+        master.vm.hostname = "master"
+    end
+
+    # Slave
+    config.vm.define "slave" do |slave|
+        slave.vm.network "private_network", ip: "192.168.10.101"
+        slave.vm.hostname = "slave"
+    end
+end
+```
