@@ -2,9 +2,7 @@
 # vi: set ft=ruby :
 
 Vagrant.configure("2") do |config|
-    config.vm.box = "ubuntu/trusty64"
-    #config.vm.box = "chef/centos-7.0"
-    #config.vm.box = "ubuntu/trusty64"
+    config.vm.box = "perconajay/centos-86_64"
 
     # Master
     config.vm.define "master" do |master|
