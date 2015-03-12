@@ -1,7 +1,7 @@
-[tutorials]: tree/master/tutorial 
-[Vagrantfile]: blob/master/Vagrantfile
-[ansible.cfg]: blob/master/ansible.cfg
-[hosts]: blob/master/provisioning/inventory/hosts
+[tutorials]: tutorial 
+[Vagrantfile]: Vagrantfile
+[ansible.cfg]: ansible.cfg
+[hosts]: provisioning/inventory/hosts
 
 ansible-tutorial
 ================
