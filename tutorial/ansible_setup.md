@@ -29,7 +29,7 @@ More information and detailed instructions can be found on [Ansible install page
 
 ##### Using Pip
 
-* See [Install Ansible Using Pip]
+* See [Installing Ansible Using Pip]
  
 ##### Using HomeBrew and Cask
 
@@ -44,7 +44,7 @@ More information and detailed instructions can be found on [Ansible install page
 
 ##### Using DEB
 
-* See [Install Ansible From Source]
+* See [Installing Ansible From Source]
 
 ##### Using apt-get
 
@@ -75,7 +75,7 @@ More information and detailed instructions can be found on [Ansible install page
 
 ##### Using RPM
 
-* See [Install Ansible From Source]
+* See [Installing Ansible From Source]
 
 ##### Using yum
 
