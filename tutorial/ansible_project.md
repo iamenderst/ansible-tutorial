@@ -1,32 +1,23 @@
-Setting up your Project
-=======================
+# Setting up your Project
 
-Setting up your git configuration
----------------------------------
-* git config ...
+## Setting up your bare git repo
 
-Setting up your bare git repo
------------------------------
 * mkdir ansible-mysql 
 * cd ansible-mysql
 * git init .
 
-Creating your inventory file
-----------------------------
+## Creating your inventory file
+
 * Create ${PROJECT}/hosts
 * Create groups in hosts [master], [slave], [all:children], ...
 
-Setting up ansible.cfg to default to your inventory
----------------------------------------------------
+## Setting up ansible.cfg to default to your inventory
+
 * vi ansible.cfg 
 * edit: inventory=${PROJECT}/hosts
 * confirm that you can run ansible and ansible-play without -i
 
-Creating your first simple playbook
------------------------------------
+## Creating your first simple playbook
 
-Introducing code reuse via roles
---------------------------------
-
-
+## Introducing code reuse via roles
 
