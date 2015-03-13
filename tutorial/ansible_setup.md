@@ -216,8 +216,28 @@ More information and detailed instructions can be found on [Ansible install page
 
 ## Ansible Basics
 
-* [Ad-hoc commands](https://github.com/robertbarabas/tutorials/Ansible_adhoc.md)
+### Ping
 
-* [Ansible Modules](https://github.com/robertbarabas/tutorials/Ansible_modules.md)
+* ansible -m ping master
+
+### Facts
+
+* ansible -m setup master
+
+### Uptime
+
+* ansible -a ...
+
+
+### Ansible Modules
+
+#### Core modules
+
+###### ping
+
+##### setup
+
+##### command
+
 
 
