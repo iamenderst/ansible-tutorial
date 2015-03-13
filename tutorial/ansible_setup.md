@@ -6,6 +6,7 @@
 [Installing Ansible From Source]: ansible_setup.md#installing-ansible-from-source
 [Installing Ansible Using Pip]: ansible_setup.md#installing-ansible-using-pip
 
+[Ansible Configuration Options]: http://docs.ansible.com/intro_configuration.html
 
 # Setting up Ansible
 
@@ -195,11 +196,28 @@ More information and detailed instructions can be found on [Ansible install page
 
 ## Configuring Ansible
 
-* [Configuration](https://github.com/robertbarabas/tutorials/Ansible_configuration.md)
+### Default locations
+
+* Per system: /etc/ansible.cfg
+* Per user: ~/ansible.cfg
+* Per project: ${PROJECT}/ansible.cfg
+* Explaining inventory lookup
+  * /etc/ansible/hosts
+  * ${PROJECT}/hosts (segway into ansible.cfg!)
+
+### Setting up defaults with ansible.cfg
+
+* [Ansible Configuration Options]
+* Setting up ansible.cfg
+* Project settings
+* SSH settings
+* Gotchas (when not running from the directory which contains ansible.cfg)
+
 
 ## Ansible Basics
 
 * [Ad-hoc commands](https://github.com/robertbarabas/tutorials/Ansible_adhoc.md)
+
 * [Ansible Modules](https://github.com/robertbarabas/tutorials/Ansible_modules.md)
 
 
