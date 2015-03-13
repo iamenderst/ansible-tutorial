@@ -160,7 +160,38 @@ More information and detailed instructions can be found on [Ansible install page
 
 ## Ansible Architecture
 
-* [Architecture](https://github.com/robertbarabas/tutorials/Ansible_architecture.md)
+### Operation modes
+
+##### Push
+* Most common
+* This is what we are going to use
+
+###### Pull
+* Less common
+* ansible-pull(1)
+
+### SSH access
+
+### Access to Ansible (git) repo
+
+### Privileges for certain commands (SUDO)
+
+### Terminology
+
+##### Management Workstation
+
+##### Managed Nodes
+
+##### Inventory
+
+##### Modules
+
+##### Roles
+
+##### Tasks
+
+##### Playbooks
+
 
 ## Configuring Ansible
 
