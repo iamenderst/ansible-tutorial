@@ -66,7 +66,7 @@ More information and detailed instructions can be found on [Ansible install page
 * Install the package with the following command:  
 
 ```
- $ apt-get install ansible
+ $ sudo apt-get install ansible
 ```
 
   (note that above assumes package is called ansible)
@@ -108,7 +108,7 @@ More information and detailed instructions can be found on [Ansible install page
 ##### MAC OS X
 
 ```
- $ CFLAGS=-Qunused-arguments CPPFLAGS=-Qunused-arguments pip install ansible
+ $ sudo CFLAGS=-Qunused-arguments CPPFLAGS=-Qunused-arguments pip install ansible
 ```
 
 ##### Linux
