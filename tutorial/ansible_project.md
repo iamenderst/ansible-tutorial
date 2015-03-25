@@ -11,7 +11,7 @@
  $ git init .
 ```
 
-:information_source: *ansible tutorial* is the directory which contains your *Vagrantfile* which at this point should like as follows:
+* *ansible tutorial* is the directory which contains your *Vagrantfile* which at this point should like as follows:
 
 ```
 # -*- mode: ruby -*-
@@ -185,8 +185,8 @@ hostfile = hosts
 PLAY [Set up OS] **************************************************************
 
 GATHERING FACTS ***************************************************************
-ok: [192.168.10.100]
 ok: [192.168.10.101]
+ok: [192.168.10.100]
 
 TASK: [Install EPEL] **********************************************************
 ok: [192.168.10.101]
@@ -198,13 +198,13 @@ changed: [192.168.10.101] => (item=nc,socat,lsof,wget,curl,screen,tmux,sysstat,n
 
 TASK: [Manage Services] *******************************************************
 changed: [192.168.10.101] => (item={'state': 'running', 'name': 'ntpd'})
-changed: [192.168.10.101] => (item={'state': 'stopped', 'name': 'firewalld'})
 changed: [192.168.10.100] => (item={'state': 'running', 'name': 'ntpd'})
+changed: [192.168.10.101] => (item={'state': 'stopped', 'name': 'firewalld'})
 changed: [192.168.10.100] => (item={'state': 'stopped', 'name': 'firewalld'})
 
 TASK: [Ensure SELINUX is permissive] ******************************************
-ok: [192.168.10.101]
 ok: [192.168.10.100]
+ok: [192.168.10.101]
 
 PLAY RECAP ********************************************************************
 192.168.10.100             : ok=5    changed=2    unreachable=0    failed=0
@@ -214,3 +214,168 @@ PLAY RECAP ********************************************************************
 
 ## Install MySQL with another play
 
+* Create another play and populate it with below content:
+
+```
+ $ cat plays/setup_mysql.yml
+---
+- name: Setup MySQL
+  hosts: all
+  tasks:
+    - include_vars: ../vars/percona_repo.yml
+
+    - name: Install MySQL repository
+      yum: name={{ percona_yum_repo }} state=present
+
+    - name: Install Percona Server
+      yum: name="Percona-Server-server-56" state=present
+      register: percona_server
+
+    - name: Install Percona Utilities
+      yum: name={{ item }} state=present
+      with_items:
+        - percona-toolkit
+        - percona-xtrabackup
+
+    - name: Generate Random Server ID
+      when: percona_server|changed
+      shell: echo $RANDOM
+      register: random_number
+
+    - name: Capture random number as server_id
+      when: random_number|changed
+      set_fact: server_id={{ random_number.stdout }}
+
+    - name: Ensure server_id looks sane
+      when: random_number|changed
+      assert:
+        that:
+          - server_id is defined
+          - server_id|int >= 0
+          - server_id|int < 4294967295
+
+    - include_vars: ../vars/mysql_settings.yml
+
+    - name: Configure MySQL
+      when: random_number|changed
+      template:
+        src: ../templates/my.cnf.j2
+        dest: /etc/my.cnf
+        owner: root
+        group: root
+      notify:
+        - Restart MySQL
+
+  handlers:
+    - name: Restart MySQL
+      service: name=mysql state=restarted
+```
+
+* As you may have spotted from the above, our play now depends on a few external files. One such file is percona_repo.yml and mysql_settings.yml which encapsulate variables for this play. Let's create them:
+
+```
+ $ mkdir vars
+ $ vi vars/percona_repo.yml
+ $ cat vars/percona_repo.yml
+
+---
+percona_yum_repo: http://www.percona.com/downloads/percona-release/redhat/0.1-3/percona-release-0.1-3.noarch.rpm
+
+ $ vi vars/mysql_settings.yml
+ $ cat vars/mysql_settings.yml
+ 
+---
+mysqld:
+  server_id: "{{ server_id|int }}"
+  datadir: /var/lib/mysql
+  log_error: error.log
+  innodb_buffer_pool_size: 256M
+  innodb_log_file_size: 64M
+  innodb_flush_method: O_DIRECT
+  innodb_flush_log_at_trx_commit: 2
+  query_cache_size: 0
+  query_cache_type: 0
+  performance_schema: OFF
+  log_bin:
+  innodb_file_per_table:
+  pid-file: /var/run/mysql/mysqld.pid
+```
+
+Furthermore, a template called *my.cnf.j2* is referenced. Let's populate it:
+
+```
+ $ mkdir templates
+ $ vi templates/my.cnf.j2
+ $ cat templates/my.cnf.j2
+
+[mysqld]
+{% for key, value in mysqld.iteritems() %}
+{% if value == None %}
+{{ key }}
+{% else %}
+{{ key }} = {{ value }}
+{% endif %}
+{% endfor %}
+
+[mysql]
+prompt = "{{ ansible_hostname }} mysql> "
+
+[client]
+user = root
+```
+
+* Now that all the files are present, let's run the play:
+
+```
+ $ ansible-playbook plays/setup_mysql.yml
+
+PLAY [Setup MySQL] ************************************************************
+
+GATHERING FACTS ***************************************************************
+ok: [192.168.10.100]
+ok: [192.168.10.101]
+
+TASK: [include_vars ../vars/percona_repo.yml] *********************************
+ok: [192.168.10.101]
+ok: [192.168.10.100]
+
+TASK: [Install MySQL repository] **********************************************
+changed: [192.168.10.101]
+changed: [192.168.10.100]
+
+TASK: [Install Percona Server] ************************************************
+changed: [192.168.10.101]
+changed: [192.168.10.100]
+
+TASK: [Install Percona Utilities] *********************************************
+changed: [192.168.10.101] => (item=percona-toolkit,percona-xtrabackup)
+changed: [192.168.10.100] => (item=percona-toolkit,percona-xtrabackup)
+
+TASK: [Generate Random Server ID] *********************************************
+changed: [192.168.10.100]
+changed: [192.168.10.101]
+
+TASK: [Capture random number as server_id] ************************************
+ok: [192.168.10.101]
+ok: [192.168.10.100]
+
+TASK: [Ensure server_id looks sane] *******************************************
+ok: [192.168.10.100]
+ok: [192.168.10.101]
+
+TASK: [include_vars ../vars/mysql_settings.yml] *******************************
+ok: [192.168.10.100]
+ok: [192.168.10.101]
+
+TASK: [Configure MySQL] *******************************************************
+changed: [192.168.10.100]
+changed: [192.168.10.101]
+
+NOTIFIED: [Restart MySQL] *****************************************************
+changed: [192.168.10.101]
+changed: [192.168.10.100]
+
+PLAY RECAP ********************************************************************
+192.168.10.100             : ok=11   changed=6    unreachable=0    failed=0
+192.168.10.101             : ok=11   changed=6    unreachable=0    failed=0
+```
