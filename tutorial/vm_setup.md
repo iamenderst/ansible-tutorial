@@ -202,7 +202,7 @@ To achieve that, we are going to create a simple Vagrantfile to describe the set
 
 ```
  $ mkdir demo
- $ cat > Vagrantfile
+ $ cat > demo/Vagrantfile
  [copy and paste Vagrantfile contents here]
  ^D
 ````
@@ -234,13 +234,17 @@ end
 
 * Make sure you are in your project directory (*demo*)
 
+```
+ cd demo
+```
+
 * Validate that your Vagrantfile looks consistent with the snippet above     
 
 ```
  $ cat Vagrantfile
 ```
   
-* Start up your VMs:  
+* Start up your VMs (Might take a while the first time, do not worry):
 
 ```
  $ vagrant up
