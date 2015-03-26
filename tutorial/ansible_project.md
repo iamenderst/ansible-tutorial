@@ -830,3 +830,167 @@ PLAY RECAP ********************************************************************
 - include: plays/setup_sakila.yml
 - include: plays/clone_mysql.yml
 ```
+
+* Drop your VMs and test provisioning
+
+```
+ $ vagrant destroy -f
+ ...
+ $ vagrant up
+ ...
+ $ ansible-playbook site.yml
+
+PLAY [Setup Server] ***********************************************************
+
+GATHERING FACTS ***************************************************************
+ok: [192.168.10.101]
+ok: [192.168.10.100]
+
+TASK: [os | Install EPEL] *****************************************************
+ok: [192.168.10.101]
+ok: [192.168.10.100]
+
+TASK: [os | Install Handy Tools] **********************************************
+changed: [192.168.10.101] => (item=nc,socat,lsof,wget,curl,screen,tmux,sysstat,ntp,ntpdate,telnet,unzip,bind-utils,vim,perf,libselinux-python)
+changed: [192.168.10.100] => (item=nc,socat,lsof,wget,curl,screen,tmux,sysstat,ntp,ntpdate,telnet,unzip,bind-utils,vim,perf,libselinux-python)
+
+TASK: [os | Manage Services] **************************************************
+changed: [192.168.10.101] => (item={'state': 'running', 'name': 'ntpd'})
+changed: [192.168.10.100] => (item={'state': 'running', 'name': 'ntpd'})
+changed: [192.168.10.101] => (item={'state': 'stopped', 'name': 'firewalld'})
+changed: [192.168.10.100] => (item={'state': 'stopped', 'name': 'firewalld'})
+
+TASK: [os | Ensure SELINUX is permissive] *************************************
+ok: [192.168.10.101]
+ok: [192.168.10.100]
+
+TASK: [os | Setup hosts] ******************************************************
+changed: [192.168.10.100]
+changed: [192.168.10.101]
+
+TASK: [mysql | include_vars percona_repo.yml] *********************************
+ok: [192.168.10.101]
+ok: [192.168.10.100]
+
+TASK: [mysql | Install MySQL repository] **************************************
+changed: [192.168.10.101]
+changed: [192.168.10.100]
+
+TASK: [mysql | Install Percona Server] ****************************************
+changed: [192.168.10.100]
+changed: [192.168.10.101]
+
+TASK: [mysql | Install Percona Utilities] *************************************
+changed: [192.168.10.100] => (item=percona-toolkit,percona-xtrabackup)
+changed: [192.168.10.101] => (item=percona-toolkit,percona-xtrabackup)
+
+TASK: [mysql | Generate Random Server ID] *************************************
+changed: [192.168.10.100]
+changed: [192.168.10.101]
+
+TASK: [mysql | Capture random number as server_id] ****************************
+ok: [192.168.10.100]
+ok: [192.168.10.101]
+
+TASK: [mysql | Ensure server_id looks sane] ***********************************
+ok: [192.168.10.100]
+ok: [192.168.10.101]
+
+TASK: [mysql | include_vars mysql_settings.yml] *******************************
+ok: [192.168.10.101]
+ok: [192.168.10.100]
+
+TASK: [mysql | Configure MySQL] ***********************************************
+changed: [192.168.10.101]
+changed: [192.168.10.100]
+
+NOTIFIED: [mysql | Restart MySQL] *********************************************
+changed: [192.168.10.101]
+changed: [192.168.10.100]
+
+PLAY [Setup Sakila Database] **************************************************
+
+GATHERING FACTS ***************************************************************
+ok: [192.168.10.100]
+
+TASK: [Check if sakila is present] ********************************************
+failed: [192.168.10.100] => {"changed": true, "cmd": "echo | mysql -s sakila", "delta": "0:00:00.015584", "end": "2015-03-26 03:21:26.247353", "rc": 1, "start": "2015-03-26 03:21:26.231769", "warnings": []}
+stderr: ERROR 1049 (42000): Unknown database 'sakila'
+...ignoring
+
+TASK: [Download sakila gz] ****************************************************
+changed: [192.168.10.100]
+
+TASK: [Extract gz] ************************************************************
+changed: [192.168.10.100]
+
+TASK: [Load sakila database] **************************************************
+changed: [192.168.10.100] => (item=sakila-db/sakila-schema.sql)
+changed: [192.168.10.100] => (item=sakila-db/sakila-data.sql)
+
+PLAY [Check settings] *********************************************************
+
+GATHERING FACTS ***************************************************************
+ok: [192.168.10.100]
+ok: [192.168.10.101]
+
+TASK: [Ensure critical variables are set] *************************************
+ok: [192.168.10.100]
+ok: [192.168.10.101]
+
+PLAY [Target] *****************************************************************
+
+GATHERING FACTS ***************************************************************
+ok: [192.168.10.101]
+
+TASK: [Stop mysql] ************************************************************
+changed: [192.168.10.101]
+
+TASK: [Remove data in {{ datadir }}] ******************************************
+changed: [192.168.10.101]
+
+TASK: [Start streaming listener] **********************************************
+<job 225532523056.5167> finished on 192.168.10.101
+
+PLAY [Source] *****************************************************************
+
+GATHERING FACTS ***************************************************************
+ok: [192.168.10.100]
+
+TASK: [Setup replication user] ************************************************
+changed: [192.168.10.100]
+
+TASK: [Stream backup] *********************************************************
+changed: [192.168.10.100]
+
+PLAY [Start mysql and replication on slave] ***********************************
+
+GATHERING FACTS ***************************************************************
+ok: [192.168.10.101]
+
+TASK: [Run apply log] *********************************************************
+changed: [192.168.10.101]
+
+TASK: [Fix permissions] *******************************************************
+changed: [192.168.10.101]
+
+TASK: [Start mysql] ***********************************************************
+changed: [192.168.10.101]
+
+TASK: [Get master log file] ***************************************************
+changed: [192.168.10.101]
+
+TASK: [Get master log position] ***********************************************
+changed: [192.168.10.101]
+
+TASK: [Configure replication] *************************************************
+changed: [192.168.10.101]
+
+TASK: [Start replication] *****************************************************
+changed: [192.168.10.101]
+
+PLAY RECAP ********************************************************************
+192.168.10.100             : ok=26   changed=15   unreachable=0    failed=0
+192.168.10.101             : ok=31   changed=18   unreachable=0    failed=0
+
+```
