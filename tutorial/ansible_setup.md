@@ -168,7 +168,7 @@ More information and detailed instructions can be found on [Ansible install page
 * No need to setup agents or things on nodes
 * This is what we are going to use
 
-###### Pull
+##### Pull
 * Less common
 * Useful if you want nodes to check every N minutes on a particular scheduler
 * Works by checking configuration orders out of Git on a crontab and the managing the machine locally
@@ -184,7 +184,19 @@ More information and detailed instructions can be found on [Ansible install page
 
 ##### Management Workstation
 
+* This is the machine where Ansible actually runs
+* Ansible can be run from any machine with Python 2.6 installed
+* Windows isn’t supported for the control machine :(
+* Can be Red Hat, Debian, CentOS, OS X, any of the BSDs, and so on :)
+* This is the only place where you need to install Ansible
+
 ##### Managed Nodes
+
+* The machines where things happen!
+* This are the "Hosts" defined on the Inventory file
+* Accessed via SSH (if remote, local actions can also happen)
+* The only requirement is Python 2.4 or later
+* If running less than Python 2.5, you will also need the package **python-simplejson**
 
 ##### [Inventory] (http://docs.ansible.com/intro_inventory.html)
 
