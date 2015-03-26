@@ -33,3 +33,9 @@
 
 - name: Ensure SELINUX is permissive
   selinux: state=permissive policy=targeted
+
+- name: Setup hosts
+  template:
+    src: hosts.j2
+    dest: /etc/hosts
+
