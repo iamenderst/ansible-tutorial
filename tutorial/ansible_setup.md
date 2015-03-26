@@ -103,7 +103,7 @@ More information and detailed instructions can be found on [Ansible install page
  $ sudo easy_install pip
 ```
 
-* Install ansible via pip
+* Install ansible via pip:
 
 ##### MAC OS X
 
@@ -146,7 +146,7 @@ More information and detailed instructions can be found on [Ansible install page
 
 ##### Red Hat derivatives
 ```
- $ make deb
+ $ make rpm
  $ sudo rpm -ivh ansible*.rpm
 ```
 
@@ -164,11 +164,14 @@ More information and detailed instructions can be found on [Ansible install page
 ### Operation modes
 
 ##### Push
-* Most common
+* Most common (and the default mode)
+* No need to setup agents or things on nodes
 * This is what we are going to use
 
 ###### Pull
 * Less common
+* Useful if you want nodes to check every N minutes on a particular scheduler
+* Works by checking configuration orders out of Git on a crontab and the managing the machine locally
 * ansible-pull(1)
 
 ### SSH access
@@ -183,16 +186,87 @@ More information and detailed instructions can be found on [Ansible install page
 
 ##### Managed Nodes
 
-##### Inventory
+##### [Inventory] (http://docs.ansible.com/intro_inventory.html)
 
-##### Modules
+* The file where you describes Hosts and Groups
+* Basically, here is where you put the ip/hostnames of the machines you want to manage
+* Uses a simple INI format
 
-##### Roles
+```
+monitor.percona.com
 
-##### Tasks
+[databases]
+db-east.percona.com
+db-west.percona.com
 
-##### Playbooks
+[webservers]
+static.percona.com
+foo.percona.com
+```
 
+##### [Modules] (http://docs.ansible.com/modules.html)
+
+* The units of work that Ansible ships out to remote machines
+* Little scripts that can be made on any language including Perl, Bash, or Ruby – but can leverage some useful communal library code if written in Python
+* Return JSON or simple key=value pairs (though if you are using the command line or playbooks, you don’t really need to know much about that)
+* Modules are **idempotent**
+* Once modules are executed on remote machines, they are removed
+* Documentation can be accessed from the command line:
+
+```
+ansible-doc yum
+```
+
+##### [Roles] (http://docs.ansible.com/playbooks_roles.html#roles)
+
+* The best way to organize your playbooks
+* Roles are ways of automatically loading certain vars_files, tasks, and handlers based on a known file structure
+* Roles are just automation around ‘include’ directives, and really don’t contain much additional magic.
+* A role may include applying certain variable values, certain tasks, and certain handlers – or just one or more of these things.
+* Grouping content by roles also allows easy sharing of roles with other users
+
+Example:
+```
+site.yml
+roles/
+   databases/
+     files/
+     templates/
+     tasks/
+     handlers/
+     vars/
+     defaults/
+     meta/
+   webservers/
+     files/
+     templates/
+     tasks/
+     handlers/
+     vars/
+     defaults/
+     meta/
+
+```
+
+##### [Tasks] (http://docs.ansible.com/playbooks_intro.html#tasks-list)
+
+* The goal of each task is to execute a module, with very specific arguments
+* Tasks combine an action (a module and its arguments) with a name and optionally some other keywords (like looping directives)
+* Tasks are executed in order, one at a time, against all machines matched by the host pattern, before moving on to the next task
+
+Example of a task:
+```
+tasks:
+  - name: make sure apache is running
+    service: name=httpd state=running
+```
+
+##### [Playbooks] (http://docs.ansible.com/playbooks.html)
+
+* Playbooks exist to run tasks
+* A playbook is a list of plays
+* A play is minimally a mapping between a set of hosts and the tasks which run on those hosts
+* There can be one or many plays in a playbook
 
 ## Configuring Ansible
 
