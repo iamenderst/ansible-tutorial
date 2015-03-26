@@ -437,7 +437,23 @@ PLAY RECAP ********************************************************************
 
 - name: Ensure SELINUX is permissive
   selinux: state=permissive policy=targeted
+  
+- name: Setup hosts
+  template:
+    src: hosts.j2
+    dest: /etc/hosts
 ``` 
+
+* Create hosts file template
+
+``` 
+ $ cat roles/os/templates/hosts.j2
+127.0.0.1   localhost localhost.localdomain localhost4 localhost4.localdomain4
+::1         localhost localhost.localdomain localhost6 localhost6.localdomain6
+
+192.168.1.100   master
+192.168.1.101   slave
+```
 
 * Now create a role called "mysql":
 
@@ -627,3 +643,190 @@ PLAY RECAP ********************************************************************
 192.168.10.101             : ok=15   changed=8    unreachable=0    failed=0
 ```
 
+## Populating the master with data
+
+* Create the following play:
+
+```
+ $ cat plays/setup_sakila.yml
+---
+- name: Setup Sakila Database
+  hosts: master
+  tasks:
+    - name: Check if sakila is present
+      shell: echo | mysql -s sakila
+      register: sakila_found
+      always_run: yes
+      ignore_errors: yes
+
+    - name: Download sakila gz
+      get_url:
+        url: http://downloads.mysql.com/docs/sakila-db.tar.gz
+        dest: /root
+      when: sakila_found|failed
+      register: sakila_downloaded
+
+    - name: Extract gz
+      unarchive:
+        copy: no
+        src: /root/sakila-db.tar.gz
+        dest: /root
+      when: sakila_downloaded|changed
+      register: sakila_extracted
+
+    - name: Load sakila database
+      shell: "mysql < /root/{{ item }}"
+      when: sakila_extracted|changed
+      with_items:
+        - sakila-db/sakila-schema.sql
+        - sakila-db/sakila-data.sql
+```
+
+* Load the database on master with this play:
+
+```
+ $ ansible-playbook plays/setup_sakila.yml
+
+PLAY [Setup Sakila Database] **************************************************
+
+GATHERING FACTS ***************************************************************
+ok: [192.168.10.100]
+
+TASK: [Check if sakila is present] ********************************************
+failed: [192.168.10.100] => {"changed": true, "cmd": "echo | mysql -s sakila", "delta": "0:00:00.015590", "end": "2015-03-26 02:03:18.785404", "rc": 1, "start": "2015-03-26 02:03:18.769814", "warnings": []}
+stderr: ERROR 1049 (42000): Unknown database 'sakila'
+...ignoring
+
+TASK: [Download sakila gz] ****************************************************
+changed: [192.168.10.100]
+
+TASK: [Extract gz] ************************************************************
+changed: [192.168.10.100]
+
+TASK: [Load sakila database] **************************************************
+changed: [192.168.10.100] => (item=sakila-db/sakila-schema.sql)
+changed: [192.168.10.100] => (item=sakila-db/sakila-data.sql)
+
+PLAY RECAP ********************************************************************
+192.168.10.100             : ok=5    changed=4    unreachable=0    failed=0
+
+```
+
+## Setting up replication
+
+* Create play to clone database from master to slave
+
+```
+ $ cat plays/clone_mysql.yml
+---
+- name: Check settings
+  vars:
+    - datadir: /var/lib/mysql
+    - port: 9999
+    - source: master
+    - target: slave
+    - owner: mysql
+    - group: mysql
+  hosts: all
+  tasks:
+    - name: Ensure critical variables are set
+      assert:
+        that:
+          - source is defined
+          - target is defined
+          - owner is defined
+          - group is defined
+          - port is defined and port > 0 and port < 65535
+          - datadir is defined and datadir != "/"
+
+- name: Target
+  vars:
+    - datadir: /var/lib/mysql
+    - port: 9999
+    - source: master
+    - target: slave
+    - owner: mysql
+    - group: mysql
+  hosts:
+    - "{{ target }}"
+  tasks:
+    - name: Stop mysql
+      service: name=mysql state=stopped
+
+    - name: "Remove data in {{ datadir }}"
+      shell: "rm -rf {{ datadir }}/*"
+
+    - name: Start streaming listener
+      shell: "cd {{ datadir }} && nc -l {{ port }} | xbstream -xv ."
+      async: 300
+      poll: 0
+
+- name: Source
+  vars:
+    - datadir: /var/lib/mysql
+    - port: 9999
+    - source: master
+    - target: slave
+    - owner: mysql
+    - group: mysql
+  hosts:
+    - "{{ source }}"
+  tasks:
+    - name: Setup replication user
+      shell: mysql -e "GRANT REPLICATION SLAVE ON *.* TO 'replication'@'%' IDENTIFIED BY 'dummysecret';"
+
+    - name: Stream backup
+      shell: innobackupex --stream xbstream /tmp | nc {{ target }} 9999
+
+
+- name: "Start mysql and replication on {{ target }}"
+  hosts:
+    - "{{ target }}"
+  vars:
+    - datadir: /var/lib/mysql
+    - port: 9999
+    - source: master
+    - target: slave
+    - owner: mysql
+    - group: mysql
+  tasks:
+    - name: Run apply log
+      shell: "cd {{ datadir }} && innobackupex --apply-log ."
+
+    - name: Fix permissions
+      file:
+        path: "{{ datadir }}"
+        owner: "{{ owner }}"
+        group: "{{ group }}"
+        recurse: yes
+
+    - name: Start mysql
+      service: name=mysql state=running
+
+    - name: Get master log file
+      shell: "cat {{ datadir }}/xtrabackup_binlog_info | awk '{ print $1 }'"
+      register: master_log_file
+
+    - name: Get master log position
+      shell: "cat {{ datadir }}/xtrabackup_binlog_info | awk '{ print $2 }'"
+      register: master_log_pos
+
+    - name: Configure replication
+      shell: mysql -e "change master to master_host='{{ source }}', master_user='replication', master_password='dummysecret', master_port=3306, master_log_file='{{ master_log_file.stdout }}', master_log_pos={{ master_log_pos.stdout }};"
+
+    - name: Start replication
+      shell: mysql -e "start slave;"
+
+```
+
+## Creating a site setup play
+
+* Create a play called *site.yml* and load it with the following content:
+
+```
+ $ cat site.yml
+ 
+- include: plays/setup_server.yml
+- include: plays/setup_sakila.yml
+- include: plays/clone_mysql.yml
+```
