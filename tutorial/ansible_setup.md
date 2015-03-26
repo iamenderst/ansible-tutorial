@@ -319,7 +319,7 @@ tasks:
 
 #### Core modules
 
-###### ping
+##### ping
 
 ##### setup
 

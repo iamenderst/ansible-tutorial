@@ -105,7 +105,7 @@ Are you sure you want to continue connecting (yes/no)? yes
 * Create *ansible.cfg* in your *demo* project directory with the following contents:
 
 ```
- $ cat ansible.cfg
+ $ cat > ansible.cfg
  
 [defaults]
 remote_user = root
@@ -135,7 +135,6 @@ hostfile = hosts
 
 ```
  $ mkdir plays
- $ vi plays/setup_os.yml
  $ cat plays/setup_os.yml
 ---
 - name: Set up OS
@@ -169,8 +168,6 @@ hostfile = hosts
       with_items:
         - name: ntpd
           state: running
-        - name: firewalld
-          state: stopped
 
     - name: Ensure SELINUX is permissive
       selinux: state=permissive policy=targeted
@@ -199,8 +196,6 @@ changed: [192.168.10.101] => (item=nc,socat,lsof,wget,curl,screen,tmux,sysstat,n
 TASK: [Manage Services] *******************************************************
 changed: [192.168.10.101] => (item={'state': 'running', 'name': 'ntpd'})
 changed: [192.168.10.100] => (item={'state': 'running', 'name': 'ntpd'})
-changed: [192.168.10.101] => (item={'state': 'stopped', 'name': 'firewalld'})
-changed: [192.168.10.100] => (item={'state': 'stopped', 'name': 'firewalld'})
 
 TASK: [Ensure SELINUX is permissive] ******************************************
 ok: [192.168.10.100]
@@ -275,14 +270,12 @@ PLAY RECAP ********************************************************************
 
 ```
  $ mkdir vars
- $ vi vars/percona_repo.yml
- $ cat vars/percona_repo.yml
+ $ cat > vars/percona_repo.yml
 
 ---
 percona_yum_repo: http://www.percona.com/downloads/percona-release/redhat/0.1-3/percona-release-0.1-3.noarch.rpm
 
- $ vi vars/mysql_settings.yml
- $ cat vars/mysql_settings.yml
+ $ cat > vars/mysql_settings.yml
  
 ---
 mysqld:
@@ -305,8 +298,7 @@ Furthermore, a template called *my.cnf.j2* is referenced. Let's populate it:
 
 ```
  $ mkdir templates
- $ vi templates/my.cnf.j2
- $ cat templates/my.cnf.j2
+ $ cat > templates/my.cnf.j2
 
 [mysqld]
 {% for key, value in mysqld.iteritems() %}
