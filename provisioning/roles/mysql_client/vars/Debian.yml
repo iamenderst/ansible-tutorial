@@ -1,6 +1,0 @@
----
-# Percona APT repository release 
-percona_key_serv: "keys.gnupg.net"
-percona_apt_key:  "1C4CBDCDCD2EFD2A"
-percona_apt_repo: "deb http://repo.percona.com/apt {{ ansible_distribution_release }} main"
-

@@ -201,7 +201,7 @@ To achieve that, we are going to create a simple Vagrantfile to describe the set
 :warning: **Create a project directory and put your Vagrantfile in there!** :warning:
 
 ```
- $ mkdir ansible_tutorial
+ $ mkdir demo
  $ cat > Vagrantfile
  [copy and paste Vagrantfile contents here]
  ^D
@@ -232,7 +232,7 @@ end
 
 ### Validate
 
-* Make sure you are in your project directory (**ansible_tutorial/**)
+* Make sure you are in your project directory (*demo*)
 
 * Validate that your Vagrantfile looks consistent with the snippet above     
 

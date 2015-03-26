@@ -1,5 +1,0 @@
----
-- hosts: master
-  sudo: yes
-  roles:
-    - mysql_client

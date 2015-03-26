@@ -1,17 +1,17 @@
 # Setting up your Project
 
-## Setting up your bare git repo
+## Setting up bare git repo
 
 
 
-* Create empty Git repository for your project under *ansible_tutorial*
+* Create empty Git repository for your project under *demo*
 
 ```
- $ cd ansible_tutorial
+ $ cd demo
  $ git init .
 ```
 
-* *ansible tutorial* is the directory which contains your *Vagrantfile* which at this point should like as follows:
+* *demos* is the directory which contains your *Vagrantfile* which at this point should like as follows:
 
 ```
 # -*- mode: ruby -*-
@@ -36,7 +36,7 @@ end
 ```
 
 
-## Creating your inventory file
+## Creating inventory file
 
 * Create inventory file with the following layout
 
@@ -54,7 +54,7 @@ master
 slave
 ```
 
-## Bring up your VMs
+## Bringing up VMs
 
 * Start your VMs with Vagrant
 
@@ -100,9 +100,9 @@ Are you sure you want to continue connecting (yes/no)? yes
 }
 ```
 
-## Setting up defaults
+## Setting up Ansible defaults
 
-* Create *ansible.cfg* in your *ansible_tutorial* project directory with the following contents:
+* Create *ansible.cfg* in your *demo* project directory with the following contents:
 
 ```
  $ cat ansible.cfg
@@ -129,7 +129,7 @@ hostfile = hosts
 }
 ```
 
-## Creating your first simple playbook
+## Creating first simple playbook
 
 * Let's create a basic play to install a few tools and setup the OS
 
@@ -212,7 +212,7 @@ PLAY RECAP ********************************************************************
 
 ```
 
-## Install MySQL with another play
+## Creating playbook for MySQL
 
 * Create another play and populate it with below content:
 
@@ -379,3 +379,251 @@ PLAY RECAP ********************************************************************
 192.168.10.100             : ok=11   changed=6    unreachable=0    failed=0
 192.168.10.101             : ok=11   changed=6    unreachable=0    failed=0
 ```
+
+## Promoting reusability with roles
+
+* To make our scripts distributable and resuable we are going to transform them to roles
+
+* Create the roles directory:
+
+```
+ $ mkdir roles/
+```
+
+* Create a role called "os":
+
+```
+ $ ansible-galaxy init os
+- os was created successfully
+
+```
+
+* Populate roles/os/tasks/main.yml with the tasks from plays/setup_os.yml:
+
+```
+ $ cat roles/os/tasks/main.yml
+---
+# tasks file for os
+- name: Install EPEL
+  yum: name=epel-release state=present
+
+- name: Install Handy Tools
+  yum: name={{ item }} state=present
+  with_items:
+    - nc
+    - socat
+    - lsof
+    - wget
+    - curl
+    - screen
+    - tmux
+    - sysstat
+    - ntp
+    - ntpdate
+    - telnet
+    - unzip
+    - bind-utils
+    - vim
+    - perf
+    - libselinux-python
+
+- name: Manage Services
+  service: name={{ item.name }} state={{ item.state }}
+  with_items:
+    - name: ntpd
+      state: running
+    - name: firewalld
+      state: stopped
+
+- name: Ensure SELINUX is permissive
+  selinux: state=permissive policy=targeted
+``` 
+
+* Now create a role called "mysql":
+
+```
+ $ ansible-galaxy init mysql
+- mysql was created successfully
+ 
+```
+
+* We are going to populate the contents for this role also. We are going to reorganize things a bit though. Let's start with the main tasks file:
+
+```
+ $ cat roles/mysql/tasks/main.yml
+---
+# tasks file for mysql
+- include_vars: percona_repo.yml
+
+- name: Install MySQL repository
+  yum: name={{ percona_yum_repo }} state=present
+
+- name: Install Percona Server
+  yum: name="Percona-Server-server-56" state=present
+  register: percona_server
+
+- name: Install Percona Utilities
+  yum: name={{ item }} state=present
+  with_items:
+    - percona-toolkit
+    - percona-xtrabackup
+
+- name: Generate Random Server ID
+  when: percona_server|changed
+  shell: echo $RANDOM
+  register: random_number
+
+- name: Capture random number as server_id
+  when: random_number|changed
+  set_fact: server_id={{ random_number.stdout }}
+
+- name: Ensure server_id looks sane
+  when: random_number|changed
+  assert:
+    that:
+      - server_id is defined
+      - server_id|int >= 0
+      - server_id|int < 4294967295
+
+- include_vars: mysql_settings.yml
+
+- name: Configure MySQL
+  when: random_number|changed
+  template:
+    src: my.cnf.j2
+    dest: /etc/my.cnf
+    owner: root
+    group: root
+  notify:
+    - Restart MySQL
+
+```
+
+* Note that the handler goes into a separate file:
+
+```
+ $ cat roles/mysql/handlers/main.yml
+---
+# handlers file for mysql
+- name: Restart MySQL
+  service: name=mysql state=restarted
+
+```
+
+* Copy the my.cnf template into the role:
+
+```
+ $ cp -v templates/my.cnf.j2 roles/mysql/templates/
+templates/my.cnf.j2 -> roles/mysql/templates/my.cnf.j2
+
+```
+
+* Copy the vars into the myqsl role also:
+
+```
+ $ cp -v vars/* roles/mysql/vars/
+vars/mysql_settings.yml -> roles/mysql/vars/mysql_settings.yml
+vars/percona_repo.yml -> roles/mysql/vars/percona_repo.yml
+
+```
+
+## Putting the pieces together
+
+* Add roles_path to ansible.cfg
+
+```
+ $ cat ansible.cfg
+ 
+[defaults]
+remote_user = root
+private_key_file = ~/.vagrant.d/insecure_private_key
+hostfile = hosts
+roles_path = roles
+```
+
+* Create a high level playbook which uses the roles:
+
+```
+ $ cat plays/setup_server.yml
+ 
+- name: Setup Server
+  hosts: all
+  roles:
+    - os
+    - mysql
+```
+
+* Run the play to validate
+
+```
+ $ ansible-playbook plays/setup_server.yml
+
+PLAY [Setup Server] ***********************************************************
+
+GATHERING FACTS ***************************************************************
+ok: [192.168.10.101]
+ok: [192.168.10.100]
+
+TASK: [os | Install EPEL] *****************************************************
+ok: [192.168.10.100]
+ok: [192.168.10.101]
+
+TASK: [os | Install Handy Tools] **********************************************
+changed: [192.168.10.100] => (item=nc,socat,lsof,wget,curl,screen,tmux,sysstat,ntp,ntpdate,telnet,unzip,bind-utils,vim,perf,libselinux-python)
+changed: [192.168.10.101] => (item=nc,socat,lsof,wget,curl,screen,tmux,sysstat,ntp,ntpdate,telnet,unzip,bind-utils,vim,perf,libselinux-python)
+
+TASK: [os | Manage Services] **************************************************
+changed: [192.168.10.101] => (item={'state': 'running', 'name': 'ntpd'})
+changed: [192.168.10.100] => (item={'state': 'running', 'name': 'ntpd'})
+changed: [192.168.10.101] => (item={'state': 'stopped', 'name': 'firewalld'})
+changed: [192.168.10.100] => (item={'state': 'stopped', 'name': 'firewalld'})
+
+TASK: [os | Ensure SELINUX is permissive] *************************************
+ok: [192.168.10.100]
+ok: [192.168.10.101]
+
+TASK: [mysql | include_vars percona_repo.yml] *********************************
+ok: [192.168.10.101]
+ok: [192.168.10.100]
+
+TASK: [mysql | Install MySQL repository] **************************************
+changed: [192.168.10.101]
+changed: [192.168.10.100]
+
+TASK: [mysql | Install Percona Server] ****************************************
+changed: [192.168.10.100]
+changed: [192.168.10.101]
+
+TASK: [mysql | Install Percona Utilities] *************************************
+changed: [192.168.10.101] => (item=percona-toolkit,percona-xtrabackup)
+changed: [192.168.10.100] => (item=percona-toolkit,percona-xtrabackup)
+
+TASK: [mysql | Generate Random Server ID] *************************************
+changed: [192.168.10.100]
+changed: [192.168.10.101]
+
+TASK: [mysql | Capture random number as server_id] ****************************
+ok: [192.168.10.101]
+ok: [192.168.10.100]
+
+TASK: [mysql | Ensure server_id looks sane] ***********************************
+ok: [192.168.10.101]
+ok: [192.168.10.100]
+
+TASK: [mysql | include_vars mysql_settings.yml] *******************************
+ok: [192.168.10.101]
+ok: [192.168.10.100]
+
+TASK: [mysql | Configure MySQL] ***********************************************
+changed: [192.168.10.100]
+changed: [192.168.10.101]
+
+NOTIFIED: [mysql | Restart MySQL] *********************************************
+changed: [192.168.10.100]
+changed: [192.168.10.101]
+
+PLAY RECAP ********************************************************************
+192.168.10.100             : ok=15   changed=8    unreachable=0    failed=0
+192.168.10.101             : ok=15   changed=8    unreachable=0    failed=0
+```
+
