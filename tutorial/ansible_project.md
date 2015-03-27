@@ -168,6 +168,8 @@ hostfile = hosts
       with_items:
         - name: ntpd
           state: running
+        - name: firewalld
+          state: stopped
 
     - name: Ensure SELINUX is permissive
       selinux: state=permissive policy=targeted
@@ -196,6 +198,8 @@ changed: [192.168.10.101] => (item=nc,socat,lsof,wget,curl,screen,tmux,sysstat,n
 TASK: [Manage Services] *******************************************************
 changed: [192.168.10.101] => (item={'state': 'running', 'name': 'ntpd'})
 changed: [192.168.10.100] => (item={'state': 'running', 'name': 'ntpd'})
+changed: [192.168.10.101] => (item={'state': 'stopped', 'name': 'firewalld'})
+changed: [192.168.10.100] => (item={'state': 'stopped', 'name': 'firewalld'})
 
 TASK: [Ensure SELINUX is permissive] ******************************************
 ok: [192.168.10.100]
