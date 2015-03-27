@@ -386,7 +386,7 @@ PLAY RECAP ********************************************************************
  $ mkdir roles/
 ```
 
-* Create a role called "os":
+* Inside the new "roles" directory, create a role called "os":
 
 ```
  $ ansible-galaxy init os
@@ -447,8 +447,8 @@ PLAY RECAP ********************************************************************
 127.0.0.1   localhost localhost.localdomain localhost4 localhost4.localdomain4
 ::1         localhost localhost.localdomain localhost6 localhost6.localdomain6
 
-192.168.1.100   master
-192.168.1.101   slave
+192.168.10.100   master
+192.168.10.101   slave
 ```
 
 * Now create a role called "mysql":
