@@ -1,7 +1,7 @@
 [tutorials]: tutorial 
 [demo]: demo
 
-Ansible tutorial for PLMC 2015
+Ansible tutorial for PLMCE 2015
 ==============================
 
 ![Urra](https://github.com/robertbarabas/ansible-tutorial/blob/master/ansible.jpeg)
