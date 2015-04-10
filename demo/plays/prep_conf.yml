@@ -1,0 +1,34 @@
+- name: Install repos and download packages for offline mode (conference)
+  hosts: all
+  tasks:
+    - include_vars: ../vars/percona_repo.yml
+
+    - name: Install prereqs (repos, yum-utils)
+      yum: name={{ item }} state=present
+      with_items:
+        - epel-release
+        - "{{ percona_yum_repo }}"
+        - yum-utils
+
+    - name: Install Packages
+      shell: "yum --downloadonly install {{ item }}"
+      with_items:
+        - Percona-Server-server-56
+        - percona-toolkit
+        - percona-xtrabackup
+        - nc
+        - socat
+        - lsof
+        - wget
+        - curl
+        - screen
+        - tmux
+        - sysstat
+        - ntp
+        - ntpdate
+        - telnet
+        - unzip
+        - bind-utils
+        - vim
+        - perf
+        - libselinux-python
