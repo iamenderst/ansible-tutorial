@@ -5,6 +5,7 @@
 
     - name: Install MySQL repository
       yum: name={{ percona_yum_repo }} state=present
+      ignore_errors: yes
 
     - name: Install Percona Server 
       yum: name="Percona-Server-server-56" state=present

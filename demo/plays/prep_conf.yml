@@ -1,7 +1,25 @@
 - name: Install repos and download packages for offline mode (conference)
+  vars:
+    packages_dir: /packages
+    local_repo_data: |
+      [local]
+      name=Local package stash
+      enabled=1
+      baseurl=file:///packages/
+      gpgcheck=0
   hosts: all
   tasks:
     - include_vars: ../vars/percona_repo.yml
+
+    - name: Create /packages directory structure
+      file:
+        path={{ item }}
+        state=directory
+        mode=0755
+        owner=root
+        group=root
+      with_items:
+        - "{{ packages_dir }}"
 
     - name: Install prereqs (repos, yum-utils)
       yum: name={{ item }} state=present
@@ -9,9 +27,10 @@
         - epel-release
         - "{{ percona_yum_repo }}"
         - yum-utils
+        - createrepo
 
     - name: Install Packages
-      shell: "yum --downloadonly install {{ item }}"
+      shell: "yum --downloadonly --downloaddir={{ packages_dir }} install {{ item }}"
       with_items:
         - Percona-Server-server-56
         - percona-toolkit
@@ -32,3 +51,25 @@
         - vim
         - perf
         - libselinux-python
+
+    - name: Create repo
+      shell: "createrepo {{ packages_dir }}"
+
+    - name: Add local repo file to yum
+      copy:
+        content: "{{ local_repo_data }}"
+        dest: /etc/yum.repos.d/local.repo
+        mode: 0644
+        owner: root
+        group: root
+        
+    - name: Disable all repos
+      shell: yum-config-manager --disable '*'
+
+    - name: Enable local repo
+      shell: yum-config-manager --enable 'local'
+
+    - name: Download sakila gz
+      get_url:
+        url: http://downloads.mysql.com/docs/sakila-db.tar.gz
+        dest: /root
