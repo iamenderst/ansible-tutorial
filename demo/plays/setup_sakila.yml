@@ -8,19 +8,19 @@
       always_run: yes
       ignore_errors: yes
     
-    - name: Download sakila gz
-      get_url:
-        url: http://downloads.mysql.com/docs/sakila-db.tar.gz
-        dest: /root
-      when: sakila_found|failed
-      register: sakila_downloaded
+#    - name: Download sakila gz
+#      get_url:
+#        url: http://downloads.mysql.com/docs/sakila-db.tar.gz
+#        dest: /root
+#      when: sakila_found|failed
+#      register: sakila_downloaded
     
     - name: Extract gz
       unarchive:
         copy: no
         src: /root/sakila-db.tar.gz
         dest: /root
-      when: sakila_downloaded|changed
+      when: sakila_found|failed
       register: sakila_extracted
     
     - name: Load sakila database
